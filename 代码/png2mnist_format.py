@@ -4,7 +4,7 @@ from array import *
 from random import shuffle
 
 # Load from and save to
-Names = [['./training-images', 'train'], ['./test-images', 'test']]
+Names = [['png\\train', 'mnist\\train'], ['png\\test', 'mnist\\test']]
 
 for name in Names:
 
@@ -12,18 +12,18 @@ for name in Names:
     data_label = array('B')
 
     FileList = []
-    for dirname in os.listdir(name[0])[1:]:  # [1:] Excludes .DS_Store from Mac OS
+    for dirname in os.listdir(name[0]):  # [1:] Excludes .DS_Store from Mac OS
         path = os.path.join(name[0], dirname)
         for filename in os.listdir(path):
             if filename.endswith(".png"):
                 FileList.append(os.path.join(name[0], dirname, filename))
 
     shuffle(FileList)  # Usefull for further segmenting the validation set
-
+    print (FileList)
     for filename in FileList:
-
-        label = int(filename.split('/')[2])
-
+        print (filename.split('\\')[2])
+        label = int(filename.split('\\')[2])
+        print (label)
         Im = Image.open(filename)
 
         pixel = Im.load()
@@ -68,6 +68,6 @@ for name in Names:
 
 # gzip resulting files
 
-for name in Names:
-    os.system('gzip ' + name[1] + '-images-idx3-ubyte')
-    os.system('gzip ' + name[1] + '-labels-idx1-ubyte')
+# for name in Names:
+#     os.system('gzip ' + name[1] + '-images-idx3-ubyte')
+#     os.system('gzip ' + name[1] + '-labels-idx1-ubyte')
