@@ -10,6 +10,7 @@ SELECTED_PACKET_NUM = 4
 # 选取的字节数 (B)
 SELECTED_BYTES = 100
 # 从每个网络流中的前p个数据包中，提取前q字节的数据，组成p * q维矩阵
+train = []
 def getMatrixFromPacket(file_path):
     f = open(file = file_path, mode = 'rb')
     pcap = dpkt.pcap.Reader(f) #先按.pcap格式解析，若解析不了，则按pcapng格式解析
@@ -37,7 +38,8 @@ def getMatrixFromPacket(file_path):
             print("第{}个包: {}".format(i, binascii.hexlify(buf)))
             print("第{}个包的前100字节形成的数组: {}".format(i, source_array))
             encode = getOneHotEncode(source_array)
-            print("第{}个包的onehot编码: {}".format(i, encode))
+            train.append(encode)
+            # print("第{}个包的onehot编码: {}".format(i, encode))
             i = i + 1
     f.close()
     # 如果网络流个数少于SELECTED_PACKET_NUM个，则补0x00
@@ -46,7 +48,8 @@ def getMatrixFromPacket(file_path):
         source_array = numpy.zeros((100,), dtype= numpy.int)
         print("第{}个包的前100字节形成的数组: {}".format(i, source_array))
         encode = getOneHotEncode(source_array)
-        print("第{}个包的onehot编码: {}".format(i, encode))
+        train.append(encode)
+        # print("第{}个包的onehot编码: {}".format(i, encode))
         i = i + 1
     return source_array
 
@@ -66,4 +69,4 @@ if __name__ == '__main__':
     for i, file_name in enumerate(os.listdir(path)):
         file_path = os.path.join(path, file_name)
         source_array = getMatrixFromPacket(file_path)
-
+    print(train[0])
