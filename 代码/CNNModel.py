@@ -13,8 +13,8 @@ import functools
 os.environ["CUDA_VISIBLE_DEVICES"] = "1"  # 使用第3块显卡
 # 数据加载及预处理
 def load_data():
-    paths = ['mnist/train-labels-idx1-ubyte.gz', 'mnist/train-images-idx1-ubyte.gz',
-             'mnist/test-labels-idx1-ubyte.gz', 'mnist/test-images-idx1-ubyte.gz']
+    paths = ['mnist/train-labels-idx1-ubyte.gz', 'mnist/train-images-idx3-ubyte.gz',
+             'mnist/test-labels-idx1-ubyte.gz', 'mnist/test-images-idx3-ubyte.gz']
     with gzip.open(paths[0], 'rb') as lbpath:
         y_train = np.frombuffer(lbpath.read(), np.uint8, offset=8)
     with gzip.open(paths[1], 'rb') as imgpath:

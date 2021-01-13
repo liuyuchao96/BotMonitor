@@ -10,9 +10,12 @@ SELECTED_PACKET_NUM = 4
 # 选取的字节数 (B)
 SELECTED_BYTES = 100
 # 从每个网络流中的前p个数据包中，提取前q字节的数据，组成p * q维矩阵
-train = []
-def getMatrixFromPacket(file_path):
-    f = open(file = file_path, mode = 'rb')
+
+def getMatrixFromEachPacket(file_path):
+    x_train = []
+    y_train = []
+    f = open(file=file_path, mode='rb')
+    label = int(file_path.split('\\')[2])
     pcap = dpkt.pcap.Reader(f) #先按.pcap格式解析，若解析不了，则按pcapng格式解析
     i = 0
     for ts, buf in pcap:
@@ -34,11 +37,11 @@ def getMatrixFromPacket(file_path):
                 buf_hex = buf_hex.ljust(SELECTED_BYTES * 2, b'0')
             buf_hex = buf_hex[0 : SELECTED_BYTES * 2]
             source_array = numpy.array([int(buf_hex[i: i + 2], 16) for i in range(0, SELECTED_BYTES * 2, 2)])
-            print (len(buf_hex))
-            print("第{}个包: {}".format(i, binascii.hexlify(buf)))
-            print("第{}个包的前100字节形成的数组: {}".format(i, source_array))
+            # print (len(buf_hex))
+            # print("第{}个包: {}".format(i, binascii.hexlify(buf)))
+            # print("第{}个包的前100字节形成的数组: {}".format(i, source_array))
             encode = getOneHotEncode(source_array)
-            train.append(encode)
+            x_train.append(encode)
             # print("第{}个包的onehot编码: {}".format(i, encode))
             i = i + 1
     f.close()
@@ -46,12 +49,13 @@ def getMatrixFromPacket(file_path):
     # print(i)
     while i < SELECTED_PACKET_NUM:
         source_array = numpy.zeros((100,), dtype= numpy.int)
-        print("第{}个包的前100字节形成的数组: {}".format(i, source_array))
+        # print("第{}个包的前100字节形成的数组: {}".format(i, source_array))
         encode = getOneHotEncode(source_array)
-        train.append(encode)
+        x_train.append(encode)
         # print("第{}个包的onehot编码: {}".format(i, encode))
         i = i + 1
-    return source_array
+    y_train.append(label)
+    return (x_train, y_train)
 
 #对从每个网络流中提取的p * q的矩阵，进行one-hot编码，转成q * 256维pcaket向量
 def getOneHotEncode(values):
@@ -68,5 +72,5 @@ if __name__ == '__main__':
     path = 'tcp_syn'
     for i, file_name in enumerate(os.listdir(path)):
         file_path = os.path.join(path, file_name)
-        source_array = getMatrixFromPacket(file_path)
-    print(train[0])
+        source_array = getMatrixFromEachPacket(file_path)
+    print(x_train[0])
