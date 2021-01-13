@@ -68,6 +68,6 @@ for name in Names:
 
 # gzip resulting files
 
-# for name in Names:
-#     os.system('gzip ' + name[1] + '-images-idx3-ubyte')
-#     os.system('gzip ' + name[1] + '-labels-idx1-ubyte')
+for name in Names:
+    os.system('gzip ' + name[1] + '-images-idx3-ubyte')
+    os.system('gzip ' + name[1] + '-labels-idx1-ubyte')
