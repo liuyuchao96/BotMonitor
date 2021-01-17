@@ -25,9 +25,9 @@ def load_data():
         x_test = np.frombuffer(imgpath.read(), np.uint8, offset=16)
     return (x_train, y_train), (x_test, y_test)
 (x_train, y_train), (x_test, y_test) = load_data()
-
+print(x_train.shape)
 batch_size = 32
-num_classes = 10
+num_classes = 2
 epochs = 5
 data_augmentation = True #图像增强
 num_predictions = 20
@@ -37,18 +37,29 @@ model_name = 'keras_fashion_trained_model.h5'
 # 将类别转换成独热编码
 y_train = keras.utils.to_categorical(y_train, num_classes)
 y_test = keras.utils.to_categorical(y_test, num_classes)
-
-x_train = keras.utils.to_categorical(x_train, num_classes)
-x_test = keras.utils.to_categorical(x_test, num_classes)
+x_train = np.reshape(x_train, [-1, 1, 32, 32])
+x_test = np.reshape(x_test, [-1, 1, 32, 32])
+x_train = x_train.astype('float32')
+x_test = x_test.astype('float32')
 
 x_train /= 255 # 归一化
 x_test /= 255 # 归一化
 
+print(x_train.shape)
+
 model = Sequential()
 
 # 第一层
-model.add(Conv2D(32, (3, 3), padding='same', # 32, (3, 3)是卷积核数量和大小
-                 input_shape=x_train.shape[1:])) # 第一层需要指出图像的大小
+model.add(Conv2D(#图片输入形式
+        batch_input_shape = (None, 1, 32, 32),#batch,channels,rows,columns # 第一层需要指出图像的大小
+        data_format='channels_first',#if channel_last: then (batch, rows, columns, channels)
+        #指定滤波器方式
+        filters = 32,#滤波器数量
+        kernel_size = 3,#滤波器（卷积核）尺寸（5*5*1）
+        #卷积方式
+        padding = 'same',#输出尺寸和输入尺寸保持一致
+        strides = 1, #卷积步长
+     ))
 model.add(Activation('relu'))
 model.add(Conv2D(32, (3, 3)))
 model.add(Activation('relu'))
@@ -75,7 +86,7 @@ model.add(Activation('softmax'))
 opt = keras.optimizers.rmsprop(lr=0.0001, decay=1e-6)
 
 # 使用RMSprop优化器
-model.compile(loss='categorical_crossentropy', optimizer=opt, metrics=['accuracy'])
+model.compile(loss='categorical_crossentropy', optimizer=opt, metrics=['acc'])
 
 ######train#####
 if not data_augmentation:
@@ -140,3 +151,5 @@ else:
     plt.legend(['Train', 'Valid'], loc='upper left')
     plt.savefig('tradition_cnn_valid_loss.png')
     plt.show()
+if __name__ == '__main__':
+    print("hello world")
