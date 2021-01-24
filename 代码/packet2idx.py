@@ -13,9 +13,9 @@ SELECTED_BYTES = 100
 
 def getMatrixFromEachPacket(file_path):
     x_train = []
-    y_train = []
+    # y_train = []
     f = open(file=file_path, mode='rb')
-    label = int(file_path.split('\\')[2])
+    # label = int(file_path.split('\\')[2])
     pcap = dpkt.pcap.Reader(f) #先按.pcap格式解析，若解析不了，则按pcapng格式解析
     i = 0
     for ts, buf in pcap:
@@ -54,8 +54,8 @@ def getMatrixFromEachPacket(file_path):
         x_train.append(encode)
         # print("第{}个包的onehot编码: {}".format(i, encode))
         i = i + 1
-    y_train.append(label)
-    return (x_train, y_train)
+    # y_train.append(label)
+    return x_train
 
 #对从每个网络流中提取的p * q的矩阵，进行one-hot编码，转成q * 256维pcaket向量
 def getOneHotEncode(values):
@@ -73,4 +73,3 @@ if __name__ == '__main__':
     for i, file_name in enumerate(os.listdir(path)):
         file_path = os.path.join(path, file_name)
         source_array = getMatrixFromEachPacket(file_path)
-    print(x_train[0])

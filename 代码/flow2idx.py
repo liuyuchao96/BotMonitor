@@ -15,7 +15,7 @@ def getMatrixFromPcap(fileName, columns):
         content = file.read()
     # 将文件中的数据转成二进制并用16进制表示
     hex_content = binascii.hexlify(content)
-    print (len(hex_content))
+    # print (len(hex_content))
     # 考虑到pcap文件头部是文件的信息，与网络流数据无关，故跳过该部分数据
     selected_max_index = (SELECTED_BYTES + PCAP_HEADER_SIZE) * 2
     if len(hex_content) < selected_max_index:
@@ -36,13 +36,14 @@ def getImage(matrix):
     return image
 
 if __name__ == '__main__':
-    # main()
-    path = 'tcp_syn'
-    # dir_path = 'png\train'
-    for i, d in enumerate(os.listdir(path)):
-        # for f in os.listdir(os.path.join(path, d)):
-        fileName = os.path.join(path, d)
-        matrix = getMatrixFromPcap(fileName, PNG_SIZE)
-        image = getImage(matrix)
-        png_path = r"png\train\{}.png".format(d[:-5])
-        image.save(png_path)
+    dir_path = 'source_data'
+    for d in os.listdir(dir_path):
+        dataset_path = os.path.join(dir_path, d)
+        for lab in os.listdir(dataset_path):
+            lab_path = os.path.join(dataset_path, lab)
+            for f in os.listdir(lab_path):
+                fileName = os.path.join(lab_path, f)
+                matrix = getMatrixFromPcap(fileName, PNG_SIZE)
+                image = getImage(matrix)
+                png_path = r"png\{}\{}\{}.png".format(fileName.split("\\")[1], fileName.split("\\")[2], f[:-5])
+                image.save(png_path)

@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-from tensorflow.python.keras.utils import get_file
+# from tensorflow.python.keras.utils import get_file
 import gzip
 import numpy as np
 import keras
@@ -10,7 +10,7 @@ from keras.layers import Conv2D, MaxPooling2D
 import os
 import matplotlib.pyplot as plt
 import functools
-os.environ["CUDA_VISIBLE_DEVICES"] = "1"  # 使用第3块显卡
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"  # 使用第3块显卡
 # 数据加载及预处理
 def load_data():
     paths = ['mnist/train-labels-idx1-ubyte.gz', 'mnist/train-images-idx3-ubyte.gz',
@@ -83,7 +83,7 @@ model.add(Dense(num_classes))
 model.add(Activation('softmax'))
 
 # 初始化RMSprop优化器
-opt = keras.optimizers.rmsprop(lr=0.0001, decay=1e-6)
+opt = keras.optimizers.RMSprop(lr=0.0001, decay=1e-6)
 
 # 使用RMSprop优化器
 model.compile(loss='categorical_crossentropy', optimizer=opt, metrics=['acc'])
@@ -114,13 +114,9 @@ else:
     print(x_train.shape[0]/batch_size) # 保留小数
 
     # 拟合模型
-    history = model.fit_generator(datagen.flow(x_train, y_train, batch_size=batch_size), # 按batch_size大小从x,y生成增强数据
-                                  # flow_from_directory()从路径生成增强数据,和flow方法相比最大的优点在于不用
-                                  epochs=epochs,
-                                  steps_per_epoch=x_train.shape[0]//batch_size,
-                                  validation_data=(x_test, y_test),
-                                  workers=10 # 在使用基于进程的线程时，最多需要启动的进程数量。
-                                  )
+    history = model.fit(x_train, y_train, batch_size=batch_size,
+                        epochs=epochs, validation_data=(x_test, y_test),
+                        shuffle=True)
 
     model.summary()
     # 模型保存
@@ -132,24 +128,25 @@ else:
 
     #######可视化#######
 
-    # 绘制训练 & 测试的准确率值
-    plt.plot(history.history['acc'])
-    plt.plot(history.history['val_acc'])
-    plt.title('Model, accuracy')
-    plt.ylabel('Accuracy')
-    plt.xlabel('Epoch')
-    plt.legend(['Train', 'Test'], loc='upper left')
-    plt.savefig('tradition_cnn_test_acc.png')
-    plt.show()
+# 绘制训练 & 测试的准确率值
+plt.plot(history.history['acc'])
+plt.plot(history.history['val_acc'])
+plt.title('Model, accuracy')
+plt.ylabel('Accuracy')
+plt.xlabel('Epoch')
+plt.legend(['Train', 'Test'], loc='upper left')
+plt.savefig('tradition_cnn_test_acc.png')
+plt.show()
 
-    # 绘制训练 & 测试的损失值
-    plt.plot(history.history['loss'])
-    plt.plot(history.history['val_loss'])
-    plt.title('Model loss')
-    plt.ylabel('Loss')
-    plt.xlabel('Epoch')
-    plt.legend(['Train', 'Valid'], loc='upper left')
-    plt.savefig('tradition_cnn_valid_loss.png')
-    plt.show()
+# 绘制训练 & 测试的损失值
+plt.plot(history.history['loss'])
+plt.plot(history.history['val_loss'])
+plt.title('Model loss')
+plt.ylabel('Loss')
+plt.xlabel('Epoch')
+plt.legend(['Train', 'Valid'], loc='upper left')
+plt.savefig('tradition_cnn_valid_loss.png')
+plt.show()
+
 if __name__ == '__main__':
     print("hello world")

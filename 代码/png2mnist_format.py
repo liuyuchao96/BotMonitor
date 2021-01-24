@@ -19,11 +19,11 @@ for name in Names:
                 FileList.append(os.path.join(name[0], dirname, filename))
 
     shuffle(FileList)  # Usefull for further segmenting the validation set
-    print (FileList)
+    # print (FileList)
     for filename in FileList:
-        print (filename.split('\\')[2])
+        # print (filename.split('\\')[2])
         label = int(filename.split('\\')[2])
-        print (label)
+        # print (label)
         Im = Image.open(filename)
 
         pixel = Im.load()
@@ -71,3 +71,6 @@ for name in Names:
 for name in Names:
     os.system('gzip ' + name[1] + '-images-idx3-ubyte')
     os.system('gzip ' + name[1] + '-labels-idx1-ubyte')
+
+if __name__ == '__main__':
+    print("hello world")
